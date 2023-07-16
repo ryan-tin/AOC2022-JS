@@ -42,7 +42,6 @@ async function prepareFileDirectories(path) {
         input: fileStream,
         crlfDelay: Infinity,
     });
-    // Event listener for each chunk of data read from the stream
 
     let directories = new Map();
     directories.set('/home', 0);
