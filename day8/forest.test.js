@@ -11,3 +11,7 @@ const testForest = [
 test('check visible trees', () => 
     expect(forest.part1(testForest)).toBe(21)
 )
+
+test('part2', () => 
+    expect(forest.part2(testForest)).toBe(8)
+)
