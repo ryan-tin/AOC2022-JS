@@ -14,6 +14,26 @@ function part1(directories) {
     console.log(`part1: ${ sum }`);
 };
 
+// find the size of the smallest directory that would put total 
+// unused space above 30 million
+function part2(directories) {
+    let totalSpace = 70000000;
+    let totalUsed = directories.get('/home');
+
+    let totalUnused = totalSpace - totalUsed;
+    let toRelease = 30000000 - totalUnused;
+
+    let current = Infinity;
+    for (let v of directories.values()) {
+        if (v < toRelease) {
+            // ignore dirs that are too small
+            continue;
+        }
+        current = Math.min(current, v)
+    }
+    console.log(`part2: ${current}`);
+}
+
 async function prepareFileDirectories(path) {
     // Open the file as a readable stream
     const fileStream = fs.createReadStream(path, { encoding: 'utf8' });
@@ -54,7 +74,7 @@ async function prepareFileDirectories(path) {
             if (tokens[0] != 'dir') {
                 let tempPath = currPath;
                 // update all parent directories
-                while (tempPath != "/home") {
+                while (tempPath != "") {
                     directories.set(tempPath, (directories.get(tempPath) + Number(tokens[0])));
                     tempPath = tempPath.slice(0, tempPath.lastIndexOf('/'));
                 }
@@ -68,5 +88,6 @@ async function prepareFileDirectories(path) {
 let promise = prepareFileDirectories('./input.txt');
 promise.then(result => {
     part1(result);
+    part2(result);
 })
 
