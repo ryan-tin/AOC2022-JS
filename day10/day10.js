@@ -43,7 +43,7 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.part1 = void 0;
+exports.part2 = exports.part1 = void 0;
 var fsPromise = require("fs/promises");
 // NOTE: Part 1 info
 // there is a single register X which starts the value 1
@@ -80,9 +80,7 @@ function part1(inputFile) {
                     line = _c;
                     tokens = line.split(' ');
                     if (tokens[0] == 'noop') {
-                        // console.log('clock', clock, 'interval', interval);
                         if (clock == interval) {
-                            // console.log('adding', clock, '*', X, '=', clock * X, 'to sum')
                             interval += 40;
                             sum += clock * X;
                         }
@@ -91,9 +89,7 @@ function part1(inputFile) {
                     else {
                         // addx V takes two cycles to complete
                         for (i = 0; i < 2; i++) {
-                            // console.log('clock', clock, 'interval', interval);
                             if (clock == interval) {
-                                // console.log('adding', clock, '*', X, '=', clock * X, 'to sum')
                                 interval += 40;
                                 sum += clock * X;
                             }
@@ -128,6 +124,104 @@ function part1(inputFile) {
     });
 }
 exports.part1 = part1;
-part1(inputFile).then(function (res) { return console.log(res); });
+part1(inputFile).then(function (res) { return console.log('part 1:', res); });
 // part1(miniTestFile).then(res => console.log(res));
 // part1(largerTestFile).then(res => console.log(res));
+function part2(inputFile) {
+    var _a, e_2, _b, _c;
+    return __awaiter(this, void 0, void 0, function () {
+        var file, X, clock, image, image_row, _d, _e, _f, line, tokens, clockRow, i, clockRow, e_2_1;
+        return __generator(this, function (_g) {
+            switch (_g.label) {
+                case 0: return [4 /*yield*/, fsPromise.open(inputFile, 'r')];
+                case 1:
+                    file = _g.sent();
+                    X = 1;
+                    clock = 0;
+                    image = Array();
+                    image_row = "";
+                    _g.label = 2;
+                case 2:
+                    _g.trys.push([2, 7, 8, 13]);
+                    _d = true, _e = __asyncValues(file.readLines());
+                    _g.label = 3;
+                case 3: return [4 /*yield*/, _e.next()];
+                case 4:
+                    if (!(_f = _g.sent(), _a = _f.done, !_a)) return [3 /*break*/, 6];
+                    _c = _f.value;
+                    _d = false;
+                    line = _c;
+                    tokens = line.split(' ');
+                    if (tokens[0] == 'noop') {
+                        clockRow = clock % 40;
+                        if (clockRow == X - 1 || clockRow == X || clockRow == X + 1) {
+                            image_row += "#";
+                        }
+                        else {
+                            image_row += '.';
+                        }
+                        if (image_row.length == 40) {
+                            image.push(image_row);
+                            image_row = "";
+                        }
+                        clock++;
+                    }
+                    else {
+                        // addx V takes two cycles to complete
+                        for (i = 0; i < 2; i++) {
+                            clockRow = clock % 40;
+                            if (clockRow == X - 1 || clockRow == X || clockRow == X + 1) {
+                                image_row += "#";
+                            }
+                            else {
+                                image_row += '.';
+                            }
+                            if (image_row.length == 40) {
+                                image.push(image_row);
+                                image_row = "";
+                            }
+                            clock++;
+                        }
+                        X += Number(tokens[1]);
+                    }
+                    _g.label = 5;
+                case 5:
+                    _d = true;
+                    return [3 /*break*/, 3];
+                case 6: return [3 /*break*/, 13];
+                case 7:
+                    e_2_1 = _g.sent();
+                    e_2 = { error: e_2_1 };
+                    return [3 /*break*/, 13];
+                case 8:
+                    _g.trys.push([8, , 11, 12]);
+                    if (!(!_d && !_a && (_b = _e.return))) return [3 /*break*/, 10];
+                    return [4 /*yield*/, _b.call(_e)];
+                case 9:
+                    _g.sent();
+                    _g.label = 10;
+                case 10: return [3 /*break*/, 12];
+                case 11:
+                    if (e_2) throw e_2.error;
+                    return [7 /*endfinally*/];
+                case 12: return [7 /*endfinally*/];
+                case 13: return [2 /*return*/, image];
+            }
+        });
+    });
+}
+exports.part2 = part2;
+part2(inputFile).then(function (res) {
+    console.log('part 2:', 'file:', inputFile);
+    drawImage(res);
+});
+// part2(largerTestFile).then(res => {
+//     console.log('part 2:', largerTestFile);
+//     drawImage(res)
+// });
+// takes in an array of strings and draws it to the screen
+function drawImage(input) {
+    for (var i = 0; i < input.length; i++) {
+        console.log(input[i]);
+    }
+}
