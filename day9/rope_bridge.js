@@ -118,6 +118,81 @@ function part1() {
     });
 }
 part1();
+function part2() {
+    var _a, e_2, _b, _c;
+    return __awaiter(this, void 0, void 0, function () {
+        var inputFile, file, tailPath, points, i, re, _d, _e, _f, line, matches, steps, direction, i, j, tailLocation, e_2_1;
+        return __generator(this, function (_g) {
+            switch (_g.label) {
+                case 0:
+                    inputFile = './input.txt';
+                    return [4 /*yield*/, fsPromise.open(inputFile, 'r')];
+                case 1:
+                    file = _g.sent();
+                    tailPath = new Map();
+                    tailPath.set("0,0", 0); // starting point is also in the unique path
+                    points = Array(10);
+                    // fill array with starting points
+                    for (i = 0; i < 10; i++) {
+                        points[i] = { row: 0, column: 0 };
+                    }
+                    re = /(?<direction>[UDLR]{1}) (?<steps>\d+)/;
+                    _g.label = 2;
+                case 2:
+                    _g.trys.push([2, 7, 8, 13]);
+                    _d = true, _e = __asyncValues(file.readLines());
+                    _g.label = 3;
+                case 3: return [4 /*yield*/, _e.next()];
+                case 4:
+                    if (!(_f = _g.sent(), _a = _f.done, !_a)) return [3 /*break*/, 6];
+                    _c = _f.value;
+                    _d = false;
+                    line = _c;
+                    matches = line.match(re);
+                    steps = Number(matches.groups.steps);
+                    direction = matches.groups.direction;
+                    for (i = 0; i < steps; i++) {
+                        // move head
+                        points[0] = move(points[0], direction);
+                        // move other points one at a time 
+                        for (j = 0; j < points.length - 1; j++) {
+                            if (isTouching(points[j], points[j + 1])) {
+                                continue;
+                            }
+                            points[j + 1] = newTailLocation(points[j], points[j + 1]);
+                        }
+                        tailLocation = points[9].row + "," + points[9].column;
+                        tailPath.set(tailLocation, 0);
+                    }
+                    _g.label = 5;
+                case 5:
+                    _d = true;
+                    return [3 /*break*/, 3];
+                case 6: return [3 /*break*/, 13];
+                case 7:
+                    e_2_1 = _g.sent();
+                    e_2 = { error: e_2_1 };
+                    return [3 /*break*/, 13];
+                case 8:
+                    _g.trys.push([8, , 11, 12]);
+                    if (!(!_d && !_a && (_b = _e.return))) return [3 /*break*/, 10];
+                    return [4 /*yield*/, _b.call(_e)];
+                case 9:
+                    _g.sent();
+                    _g.label = 10;
+                case 10: return [3 /*break*/, 12];
+                case 11:
+                    if (e_2) throw e_2.error;
+                    return [7 /*endfinally*/];
+                case 12: return [7 /*endfinally*/];
+                case 13:
+                    console.log(tailPath.size);
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+part2();
 ;
 function move(point, direction) {
     switch (direction) {
@@ -171,7 +246,21 @@ function newTailLocation(head, tail) {
     }
     else {
         // diagonal move
-        if (Math.abs(head.row - tail.row) == 2) {
+        if (Math.abs(head.row - tail.row) == 2 && Math.abs(head.column - tail.column) == 2) {
+            if (head.row > tail.row && head.column > tail.column) { // down right diag
+                return { row: tail.row + 1, column: tail.column + 1 };
+            }
+            else if (head.row > tail.row && head.column < tail.column) { // down left diag
+                return { row: tail.row + 1, column: tail.column - 1 };
+            }
+            else if (head.row < tail.row && head.column > tail.column) { // up right diag
+                return { row: tail.row - 1, column: tail.column + 1 };
+            }
+            else { // up left diag
+                return { row: tail.row - 1, column: tail.column - 1 };
+            }
+        }
+        else if (Math.abs(head.row - tail.row) == 2) {
             if (head.row > tail.row) {
                 return { row: tail.row + 1, column: head.column };
             }

@@ -37,6 +37,43 @@ async function part1() {
 }
 part1();
 
+async function part2() {
+    const inputFile = './input.txt';
+    const file = await fsPromise.open(inputFile, 'r');
+
+    const tailPath = new Map();
+    tailPath.set("0,0", 0); // starting point is also in the unique path
+
+    let points = Array(10);
+    // fill array with starting points
+    for (let i = 0; i < 10; i++) {
+        points[i] = {row: 0, column: 0};
+    }
+
+    const re = /(?<direction>[UDLR]{1}) (?<steps>\d+)/
+    for await (const line of file.readLines()) {
+        const matches = line.match(re);
+        const steps = Number(matches.groups.steps);
+        const direction = matches.groups.direction;
+        for (let i = 0; i < steps; i++) {
+            // move head
+            points[0] = move(points[0], direction);
+            // move other points one at a time 
+            for (let j = 0; j < points.length - 1; j++) {
+                if (isTouching(points[j], points[j+1])) {
+                    continue;
+                }
+                points[j+1] = newTailLocation(points[j], points[j+1]);
+            }
+            // track tail location
+            let tailLocation = points[9].row + "," + points[9].column;
+            tailPath.set(tailLocation, 0);
+        }
+    }
+    console.log(tailPath.size);
+}
+part2();
+
 export interface Point {
     row: number;
     column: number;
@@ -91,7 +128,18 @@ export function newTailLocation(head: Point, tail: Point): Point {
         }
     } else {
         // diagonal move
-        if (Math.abs(head.row - tail.row) == 2) {
+        if (Math.abs(head.row - tail.row) == 2 && Math.abs(head.column - tail.column) == 2) {
+            if (head.row > tail.row && head.column > tail.column) {         // down right diag
+                return { row: tail.row + 1, column: tail.column + 1 };
+            } else if (head.row > tail.row && head.column < tail.column) {  // down left diag
+                return { row: tail.row + 1, column: tail.column - 1 };
+            } else if (head.row < tail.row && head.column > tail.column) {  // up right diag
+                return { row: tail.row - 1, column: tail.column + 1 };
+            } else {                                                        // up left diag
+                return { row: tail.row - 1, column: tail.column - 1 };
+            }
+        }
+        else if (Math.abs(head.row - tail.row) == 2) {
             if (head.row > tail.row) {
                 return { row: tail.row + 1, column: head.column };
             } else {
